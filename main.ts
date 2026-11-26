@@ -1,18 +1,33 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const LINE =
-  "Freestyle Napping: athletes race to fall asleep first; snoring is a foul, and dreaming of the finish line is doping.";
+// The gag works because each part breaks a different Olympic expectation:
+// the event rewards doing nothing, the foul is something you do in your
+// sleep, and the doping is a dream. Keep the parts in that order.
+const EVENT = "Freestyle Napping";
+const RULE = "athletes race to fall asleep first; snoring is a foul";
+const TWIST = "dreaming of the finish line is doping";
 
-// The entry must be a single line, 1–200 characters.
-if (LINE.length < 1 || LINE.length > 200) {
-  throw new Error(`Entry line must be 1-200 characters, got ${LINE.length}`);
+// The full entry line: a rejected Olympic sport described in one sentence.
+const LINE = `${EVENT}: ${RULE}, and ${TWIST}.`;
+
+const MIN_LENGTH = 1;
+const MAX_LENGTH = 200;
+
+// A valid entry is a single line of 1–200 characters.
+if (LINE.length < MIN_LENGTH || LINE.length > MAX_LENGTH) {
+  throw new Error(
+    `Entry must be ${MIN_LENGTH}-${MAX_LENGTH} characters, got ${LINE.length}: ${JSON.stringify(LINE)}`,
+  );
 }
 
-const outDir = "/output";
-const outFile = join(outDir, "entry.txt");
+const OUT_DIR = "/output";
+const OUT_FILE = join(OUT_DIR, "entry.txt");
 
-mkdirSync(outDir, { recursive: true });
-writeFileSync(outFile, LINE + "\n", "utf8");
+if (!existsSync(OUT_DIR)) {
+  mkdirSync(OUT_DIR, { recursive: true });
+}
 
-console.log(`Wrote ${LINE.length} characters to ${outFile}`);
+writeFileSync(OUT_FILE, LINE + "\n", "utf8");
+
+console.log(`Wrote ${LINE.length} characters to ${OUT_FILE}`);
